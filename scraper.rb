@@ -18,7 +18,7 @@ def format_key(key_text)
   key_text = key_text.gsub("/", " or ")
   # strip stray whitespace, punctuation and make spaces underscores
   key = key_text.gsub(/^\s/, "").gsub(/\s$/, "").gsub("'", "").gsub(",", "").gsub(" ", "_")
-  key
+  key.to_sym
 end
 
 def format_date(raw_date)
@@ -44,12 +44,12 @@ rows.each do |row|
   if !row.css('> th').empty? && !row.css('> td').empty?
     key = format_key(row.at(:th).text)
 
-    if key == "publish_date"
+    if key == :publish_date
       value = format_date(row.at(:td).text)
-    elsif key == "contract_duration"
+    elsif key == :contract_duration
       contract_duration = cleanup_string(row.at(:td).text).gsub(" to", "").split
-      contract_award_notice["contract_start_date"] = format_date(contract_duration[0])
-      contract_award_notice["contract_end_date"] = format_date(contract_duration[1])
+      contract_award_notice[:contract_start_date] = format_date(contract_duration[0])
+      contract_award_notice[:contract_end_date] = format_date(contract_duration[1])
     else
       value = cleanup_string(row.at(:td).text)
     end
@@ -57,15 +57,15 @@ rows.each do |row|
   elsif row.css('> th').empty? && row.css('> td > p').count > 1
     key = format_key(row.search(:p)[0].text)
 
-    if key == "contract_value" || key == "amended_contract_value"
-      key = key + "_est"
+    if key == :contract_value || key == :amended_contract_value
+      key = (key.to_s + "_est").to_sym
       value = cleanup_string(row.search(:p)[1..-1].text).gsub(" (Estimated Value of the Project)", "").delete("$,")
     else
       value = cleanup_string(row.search(:p)[1..-1].text)
     end
   # Get the row with the table
   elsif !row.search(:table).empty?
-    key = "tender_evaluation_criteria"
+    key = :tender_evaluation_criteria
 
     # Get the evaluation criteria from the table
     criteria = []
