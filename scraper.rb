@@ -57,7 +57,7 @@ def parse_contract_listing(page, last_updated)
 
       if key == :contract_value || key == :amended_contract_value
         key = (key.to_s + "_est").to_sym
-        value = cleanup_string(row.search(:p)[1..-1].text).gsub(" (Estimated Value of the Project)", "").delete("$,")
+        value = cleanup_string(row.search(:p)[1..-1].text).gsub(" (Estimated Value of the Project)", "").delete("$,").to_f
       else
         value = cleanup_string(row.search(:p)[1..-1].text)
       end
