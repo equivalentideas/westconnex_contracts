@@ -7,7 +7,7 @@ end
 
 # remove whitespace
 def cleanup_string(string)
-  string.delete("\r\n\t").gsub(/\s$/, "")
+  string.delete("\r\n\t").gsub(/\s$/, "").gsub(/^\s/, "")
 end
 
 require 'scraperwiki'
