@@ -1,6 +1,11 @@
 # This is a template for a Ruby scraper on morph.io (https://morph.io)
 # including some code snippets below that you should find helpful
 
+# remove whitespace
+def cleanup_string(string)
+  string.delete("\r\n\t").gsub(/\s$/, "")
+end
+
 require 'scraperwiki'
 require 'mechanize'
 
@@ -9,7 +14,7 @@ page = agent.get('https://tenders.nsw.gov.au/rms/?event=public.cn.view&CNUUID=0B
 table = page.at('#main-content table')
 
 # Split the contract duration into a start and end date
-contract_duration = table.search(:tr)[5].at(:td).text.delete("\r\n\t").gsub(" to", "").gsub(/\s$/, "").split
+contract_duration = cleanup_string(table.search(:tr)[5].at(:td).text).gsub(" to", "").split
 contract_duration_start = Date.parse(contract_duration[0], '%d-%b-%Y').to_s
 contract_duration_end = Date.parse(contract_duration[1], '%d-%b-%Y').to_s
 
