@@ -37,7 +37,12 @@ rows.each do |row|
   # Get the standard key value rows
   if !row.css('> th').empty? && !row.css('> td').empty?
     key = format_key(row.at(:th).text)
-    value = cleanup_string(row.at(:td).text)
+
+    if key == "publish_date"
+      value = Date.parse(row.at(:td).text, '%d-%b-%Y ').to_s
+    else
+      value = cleanup_string(row.at(:td).text)
+    end
   # Get the rows with <p><strong> for keys
   elsif row.css('> th').empty? && row.css('> td > p').count > 1
     key = format_key(row.search(:p)[0].text)
