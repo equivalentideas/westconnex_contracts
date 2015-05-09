@@ -9,12 +9,12 @@ page = agent.get('https://tenders.nsw.gov.au/rms/?event=public.cn.view&CNUUID=0B
 table = page.at('#main-content table')
 
 contract_award_notice = {
-  contract_award_notice_ID: "",
-  agency: "",
-  category: "",
-  publish_date: "",
-  particulars_of_the_goods_or_services_to_be_provided_under_this_contract: "",
-  contract_duration: "",
+  contract_award_notice_ID: table.search(:tr)[0].at(:td).text,
+  agency: table.search(:tr)[1].at(:td).text,
+  category: table.search(:tr)[2].at(:td).text,
+  publish_date: Date.parse(table.search(:tr)[3].at(:td).text, ' %d-%b-%Y ').to_s,
+  particulars_of_the_goods_or_services_to_be_provided_under_this_contract: table.search(:tr)[4].at(:td).text,
+  contract_duration: table.search(:tr)[5].at(:td).text, # clean this up
   contractor_name: "", # Contractor section
   acn: "",
   abn: "",
