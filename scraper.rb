@@ -16,7 +16,8 @@ require 'mechanize'
 agent = Mechanize.new
 page = agent.get('https://tenders.nsw.gov.au/rms/?event=public.cn.view&CNUUID=0B37D3B9-C218-BEC9-F42508EA7D143595')
 table = page.at('#main-content table')
-rows = table.search(:tr)
+rows = table.css('> tr')
+
 
 # Split the contract duration into a start and end date
 contract_duration = cleanup_string(row_value(rows[5])).gsub(" to", "").split
