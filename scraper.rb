@@ -31,6 +31,7 @@ def parse_contract_listing(page)
   contract_award_notice = {}
 
   contract_award_notice[:url] = page.uri.to_s
+  contract_award_notice[:date_scraped] = Date.today.to_s
 
   # Because I cannot predict the number of rows, or what key and value they contain,
   # I'm scraping the keys and values. This feels very fragile. If you have a better
