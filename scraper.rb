@@ -12,7 +12,7 @@ end
 
 def format_key(key_text)
   key_text = key_text.downcase
-  # strip out explaination stuff
+  # strip out explanation stuff
   key_text = key_text.gsub("(based on unspsc)", "").gsub("(incl. abn & acn)", "")
   # swap "/" for " or "
   key_text = key_text.gsub("/", " or ")
