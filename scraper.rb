@@ -78,6 +78,8 @@ def parse_contract_listing(page)
 
     # only set the key and value here if a value is assigned
     if value
+      # Use "" rather than the "-" they use for empty
+      value = nil if value == "-"
       contract_award_notice[key] = value
     end
   end
