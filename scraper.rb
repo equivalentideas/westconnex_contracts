@@ -86,11 +86,6 @@ rows.each do |row|
   end
 end
 
-# Split the contract duration into a start and end date
-contract_duration = cleanup_string(row_value(rows[5])).gsub(" to", "").split
-contract_duration_start = Date.parse(contract_duration[0], '%d-%b-%Y').to_s
-contract_duration_end = Date.parse(contract_duration[1], '%d-%b-%Y').to_s
-
 # contract_award_notice = {
 #   contract_award_notice_ID: row_value(rows[0]),
 #   agency: row_value(rows[1]),
