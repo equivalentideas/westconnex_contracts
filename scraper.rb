@@ -25,11 +25,12 @@ def format_date(raw_date)
   Date.parse(raw_date, '%d-%b-%Y ').to_s
 end
 
-def parse_contract_listing(page)
+def parse_contract_listing(page, last_updated)
   table = page.at('#main-content table')
   rows = table.css('> tr')
   contract_award_notice = {}
 
+  contract_award_notice[:last_updated] = last_updated
   contract_award_notice[:url] = page.uri.to_s
   contract_award_notice[:date_scraped] = Date.today.to_s
 
@@ -99,10 +100,10 @@ index = agent.get('https://tenders.nsw.gov.au/?refine=CN&keyword=westconnex&orde
 page_contract_listings = index.at('#main-content').css('h2 + table')[1..-1]
 
 page_contract_listings.each do |l|
-  #remember to get the date updated
+  last_updated = DateTime.parse(cleanup_string(l.search(:tr).last.at('.last-updated').children.last.text), '%d-%b-%Y %l:%M%p').strftime('%Y-%m-%d %H:%M')
   page_link = l.search(:tr).last
   page = agent.get(domain + l.search(:tr).last.at(:a).attr(:href))
-  parse_contract_listing(page)
+  parse_contract_listing(page, last_updated)
 end
 
 # # Write out to the sqlite database using scraperwiki library
