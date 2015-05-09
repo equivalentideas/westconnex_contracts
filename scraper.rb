@@ -1,6 +1,10 @@
 # This is a template for a Ruby scraper on morph.io (https://morph.io)
 # including some code snippets below that you should find helpful
 
+def row_value(row)
+  row.at(:td).text
+end
+
 # remove whitespace
 def cleanup_string(string)
   string.delete("\r\n\t").gsub(/\s$/, "")
@@ -15,26 +19,26 @@ table = page.at('#main-content table')
 rows = table.search(:tr)
 
 # Split the contract duration into a start and end date
-contract_duration = cleanup_string(rows[5].at(:td).text).gsub(" to", "").split
+contract_duration = cleanup_string(row_value(rows[5])).gsub(" to", "").split
 contract_duration_start = Date.parse(contract_duration[0], '%d-%b-%Y').to_s
 contract_duration_end = Date.parse(contract_duration[1], '%d-%b-%Y').to_s
 
 contract_award_notice = {
-  contract_award_notice_ID: rows[0].at(:td).text,
-  agency: rows[1].at(:td).text,
-  category: rows[2].at(:td).text,
-  publish_date: Date.parse(rows[3].at(:td).text, ' %d-%b-%Y ').to_s,
-  particulars_of_the_goods_or_services_to_be_provided_under_this_contract: rows[4].at(:td).text,
+  contract_award_notice_ID: row_value(rows[0]),
+  agency: row_value(rows[1]),
+  category: row_value(rows[2]),
+  publish_date: Date.parse(row_value(rows[3]), ' %d-%b-%Y ').to_s,
+  particulars_of_the_goods_or_services_to_be_provided_under_this_contract: row_value(rows[4]),
   contract_start_date: contract_duration_start,
   contract_end_date: contract_duration_end,
-  contractor_name: rows[7].at(:td).text, # Contractor section
-  acn: cleanup_string(rows[8].at(:td).text), # expect a 9 digit number for acn
-  abn: cleanup_string(rows[9].at(:td).text),
-  street_address: cleanup_string(rows[10].at(:td).text),
-  town_or_city: rows[11].at(:td).text,
-  state_or_territory: rows[12].at(:td).text,
-  postcode: rows[13].at(:td).text, # Expect a valid post code
-  country: rows[14].at(:td).text, # End contractor section
+  contractor_name: row_value(rows[7]), # Contractor section
+  acn: cleanup_string(row_value(rows[8])), # expect a 9 digit number for acn
+  abn: cleanup_string(row_value(rows[9])),
+  street_address: cleanup_string(row_value(rows[10])),
+  town_or_city: row_value(rows[11]),
+  state_or_territory: row_value(rows[12]),
+  postcode: row_value(rows[13]), # Expect a valid post code
+  country: row_value(rows[14]), # End contractor section
   other_private_sector_entities_involved_in_with_an_interest_in_or_benefiting_from_this_contract: "",
   contract_value: "",
   any_provisions_for_payment_to_the_contractor_for_operational_or_maintenance_services: "",
