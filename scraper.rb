@@ -8,21 +8,27 @@ agent = Mechanize.new
 page = agent.get('https://tenders.nsw.gov.au/rms/?event=public.cn.view&CNUUID=0B37D3B9-C218-BEC9-F42508EA7D143595')
 table = page.at('#main-content table')
 
+# Split the contract duration into a start and end date
+contract_duration = table.search(:tr)[5].at(:td).text.delete("\r\n\t").gsub(" to", "").gsub(/\s$/, "").split
+contract_duration_start = Date.parse(contract_duration[0], '%d-%b-%Y').to_s
+contract_duration_end = Date.parse(contract_duration[1], '%d-%b-%Y').to_s
+
 contract_award_notice = {
   contract_award_notice_ID: table.search(:tr)[0].at(:td).text,
   agency: table.search(:tr)[1].at(:td).text,
   category: table.search(:tr)[2].at(:td).text,
   publish_date: Date.parse(table.search(:tr)[3].at(:td).text, ' %d-%b-%Y ').to_s,
   particulars_of_the_goods_or_services_to_be_provided_under_this_contract: table.search(:tr)[4].at(:td).text,
-  contract_duration: table.search(:tr)[5].at(:td).text, # clean this up
-  contractor_name: "", # Contractor section
-  acn: "",
-  abn: "",
-  street_address: "",
-  town_or_city: "",
-  state_or_territory: "",
-  postcode: "",
-  country: "", # End contractor section
+  contract_start_date: contract_duration_start,
+  contract_end_date: contract_duration_end,
+  contractor_name: table.search(:tr)[7].at(:td).text, # Contractor section
+  acn: table.search(:tr)[8].at(:td).text, # expect a 9 digit number for acn, clean out whitespace
+  abn: table.search(:tr)[9].at(:td).text, # clean whitespace about of this
+  street_address: table.search(:tr)[10].at(:td).text, # clean whitespace off the end
+  town_or_city: table.search(:tr)[11].at(:td).text,
+  state_or_territory: table.search(:tr)[12].at(:td).text,
+  postcode: table.search(:tr)[13].at(:td).text, # Expect a valid post code
+  country: table.search(:tr)[14].at(:td).text, # End contractor section
   other_private_sector_entities_involved_in_with_an_interest_in_or_benefiting_from_this_contract: "",
   contract_value: "",
   any_provisions_for_payment_to_the_contractor_for_operational_or_maintenance_services: "",
