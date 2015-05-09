@@ -10,6 +10,17 @@ def cleanup_string(string)
   string.delete("\r\n\t").gsub(/\s$/, "").gsub(/^\s/, "")
 end
 
+def format_key(key_text)
+  key_text = key_text.downcase
+  # strip out explaination stuff
+  key_text = key_text.gsub("(based on unspsc)", "").gsub("(incl. abn & acn)", "")
+  # swap "/" for " or "
+  key_text = key_text.gsub("/", " or ")
+  # strip stray whitespace, punctuation and make spaces underscores
+  key = key_text.gsub(/^\s/, "").gsub(/\s$/, "").gsub("'", "").gsub(",", "").gsub(" ", "_")
+  key
+end
+
 require 'scraperwiki'
 require 'mechanize'
 
@@ -25,11 +36,11 @@ contract_award_notice = {}
 rows.each do |row|
   # Get the standard key value rows
   if !row.css('> th').empty? && !row.css('> td').empty?
-    key = row.at(:th).text.downcase.gsub("/", " or ").gsub(/^\s/, "").gsub("'", "").gsub(",", "").gsub(" ", "_").gsub("_(based_on_unspsc)", '')
+    key = format_key(row.at(:th).text)
     value = cleanup_string(row.at(:td).text)
   # Get the rows with <p><strong> for keys
   elsif row.css('> th').empty? && row.css('> td > p').count > 1
-    key = row.search(:p)[0].text.downcase.gsub("/", " or ").gsub(/^\s/, "").gsub("'", "").gsub(",", "").gsub(" ", "_").gsub("_(based_on_unspsc)", '')
+    key = format_key(row.search(:p)[0].text)
     value = cleanup_string(row.search(:p)[1..-1].text)
   # Get the row with the table
   elsif !row.search(:table).empty?
