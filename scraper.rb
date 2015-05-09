@@ -27,9 +27,9 @@ contract_award_notice = {
   contract_start_date: contract_duration_start,
   contract_end_date: contract_duration_end,
   contractor_name: table.search(:tr)[7].at(:td).text, # Contractor section
-  acn: table.search(:tr)[8].at(:td).text, # expect a 9 digit number for acn, clean out whitespace
-  abn: table.search(:tr)[9].at(:td).text, # clean whitespace about of this
-  street_address: table.search(:tr)[10].at(:td).text, # clean whitespace off the end
+  acn: cleanup_string(table.search(:tr)[8].at(:td).text), # expect a 9 digit number for acn
+  abn: cleanup_string(table.search(:tr)[9].at(:td).text),
+  street_address: cleanup_string(table.search(:tr)[10].at(:td).text),
   town_or_city: table.search(:tr)[11].at(:td).text,
   state_or_territory: table.search(:tr)[12].at(:td).text,
   postcode: table.search(:tr)[13].at(:td).text, # Expect a valid post code
