@@ -40,6 +40,10 @@ rows.each do |row|
 
     if key == "publish_date"
       value = Date.parse(row.at(:td).text, '%d-%b-%Y ').to_s
+    elsif key == "contract_duration"
+      contract_duration = cleanup_string(row.at(:td).text).gsub(" to", "").split
+      contract_award_notice["contract_start_date"] = Date.parse(contract_duration[0], '%d-%b-%Y').to_s
+      contract_award_notice["contract_end_date"] = Date.parse(contract_duration[1], '%d-%b-%Y').to_s
     else
       value = cleanup_string(row.at(:td).text)
     end
@@ -64,7 +68,10 @@ rows.each do |row|
     value = criteria.join(", ")
   end
 
-  contract_award_notice[key] = value
+  # only set the key and value here if a value is assigned
+  if value
+    contract_award_notice[key] = value
+  end
 end
 
 # Split the contract duration into a start and end date
