@@ -1,3 +1,5 @@
+# Scraper to run on morph.io
+
 def row_value(row)
   row.at(:td).text
 end
