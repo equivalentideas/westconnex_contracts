@@ -17,7 +17,7 @@ def format_key(key_text)
   # swap "/" for " or "
   key_text = key_text.gsub("/", " or ")
   # strip stray whitespace, punctuation and make spaces underscores
-  key = key_text.gsub(/^\s/, "").gsub(/\s$/, "").gsub("'", "").gsub(",", "").gsub(" ", "_")
+  key = key_text.gsub(/^\s/, "").gsub(/\s$/, "").gsub("'", "").gsub(",", "").gsub(" ", "_").gsub("-", "_")
   key.to_sym
 end
 
