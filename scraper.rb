@@ -21,6 +21,10 @@ def format_key(key_text)
   key
 end
 
+def format_date(raw_date)
+  Date.parse(raw_date, '%d-%b-%Y ').to_s
+end
+
 require 'scraperwiki'
 require 'mechanize'
 
@@ -41,11 +45,11 @@ rows.each do |row|
     key = format_key(row.at(:th).text)
 
     if key == "publish_date"
-      value = Date.parse(row.at(:td).text, '%d-%b-%Y ').to_s
+      value = format_date(row.at(:td).text)
     elsif key == "contract_duration"
       contract_duration = cleanup_string(row.at(:td).text).gsub(" to", "").split
-      contract_award_notice["contract_start_date"] = Date.parse(contract_duration[0], '%d-%b-%Y').to_s
-      contract_award_notice["contract_end_date"] = Date.parse(contract_duration[1], '%d-%b-%Y').to_s
+      contract_award_notice["contract_start_date"] = format_date(contract_duration[0])
+      contract_award_notice["contract_end_date"] = format_date(contract_duration[1])
     else
       value = cleanup_string(row.at(:td).text)
     end
