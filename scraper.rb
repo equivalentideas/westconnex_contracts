@@ -17,7 +17,39 @@ agent = Mechanize.new
 page = agent.get('https://tenders.nsw.gov.au/rms/?event=public.cn.view&CNUUID=0B37D3B9-C218-BEC9-F42508EA7D143595')
 table = page.at('#main-content table')
 rows = table.css('> tr')
+contract_award_notice = {}
 
+# Because I cannot predict the number of rows, or what key and value they contain,
+# I'm scraping the keys and values. This feels very fragile. If you have a better
+# solution, let me know please :)
+rows.each do |row|
+  # Get the standard key value rows
+  if !row.css('> th').empty? && !row.css('> td').empty?
+    key = row.at(:th).text.downcase.gsub("/", " or ").gsub(/^\s/, "").gsub("'", "").gsub(",", "").gsub(" ", "_").gsub("_(based_on_unspsc)", '')
+    value = cleanup_string(row.at(:td).text)
+  # Get the rows with <p><strong> for keys
+  elsif row.css('> th').empty? && row.css('> td > p').count > 1
+    key = row.search(:p)[0].text.downcase.gsub("/", " or ").gsub(/^\s/, "").gsub("'", "").gsub(",", "").gsub(" ", "_").gsub("_(based_on_unspsc)", '')
+    value = cleanup_string(row.search(:p)[1..-1].text)
+  # Get the row with the table
+  elsif !row.search(:table).empty?
+    key = "tender_evaluation_criteria"
+
+    # Get the evaluation criteria from the table
+    criteria = []
+    row.search(:tr)[1..-1].each do |r|
+      s = r.search(:td)[0].text
+      if !r.search(:td)[1].text.empty?
+        s = s + " (#{r.search(:td)[1].text} weighting)"
+      end
+      criteria.push(s)
+    end
+
+    value = criteria.join(", ")
+  end
+
+  contract_award_notice[key] = value
+end
 
 # Split the contract duration into a start and end date
 contract_duration = cleanup_string(row_value(rows[5])).gsub(" to", "").split
