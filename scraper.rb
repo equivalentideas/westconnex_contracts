@@ -50,7 +50,13 @@ rows.each do |row|
   # Get the rows with <p><strong> for keys
   elsif row.css('> th').empty? && row.css('> td > p').count > 1
     key = format_key(row.search(:p)[0].text)
-    value = cleanup_string(row.search(:p)[1..-1].text)
+
+    if key == "contract_value" || key == "amended_contract_value"
+      key = key + "_est"
+      value = cleanup_string(row.search(:p)[1..-1].text).gsub(" (Estimated Value of the Project)", "").delete("$,")
+    else
+      value = cleanup_string(row.search(:p)[1..-1].text)
+    end
   # Get the row with the table
   elsif !row.search(:table).empty?
     key = "tender_evaluation_criteria"
