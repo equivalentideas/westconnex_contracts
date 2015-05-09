@@ -85,7 +85,6 @@ def parse_contract_listing(page, last_updated)
     end
   end
 
-  p contract_award_notice
   ScraperWiki.save_sqlite([:contract_award_notice_id], contract_award_notice)
 end
 
