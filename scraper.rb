@@ -85,7 +85,7 @@ def parse_contract_listing(page, last_updated)
     end
   end
 
-  ScraperWiki.save_sqlite([:contract_award_notice_id], contract_award_notice)
+  ScraperWiki.save_sqlite([:contract_award_notice_id], contract_award_notice, table_name = 'contracts')
 
   contractor = {
     name: contract_award_notice[:contractor_name],
@@ -100,8 +100,8 @@ def parse_contract_listing(page, last_updated)
   }
 
   # If we we've seen this contractor before
-  if ScraperWiki.select("abn from data where abn='#{contractor[:abn]}'").count > 1
-    current_contracts = ScraperWiki.select("contract_award_notice_id from data where abn='#{contractor[:abn]}'and contract_award_notice_id!='#{contract_award_notice[:contract_award_notice_id]}'").map{|c| c["contract_award_notice_id"]}
+  if ScraperWiki.select("abn from contracts where abn='#{contractor[:abn]}'").count > 1
+    current_contracts = ScraperWiki.select("contract_award_notice_id from contracts where abn='#{contractor[:abn]}'and contract_award_notice_id!='#{contract_award_notice[:contract_award_notice_id]}'").map{|c| c["contract_award_notice_id"]}
     contractor[:contracts] = contractor[:contracts] + ", " + current_contracts.join(', ')
   end
 
