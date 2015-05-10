@@ -95,14 +95,12 @@ def parse_contract_listing(page, last_updated)
     city: contract_award_notice[:town_or_city],
     state: contract_award_notice[:state_or_territory],
     postcode: contract_award_notice[:postcode],
-    country: contract_award_notice[:country]
+    country: contract_award_notice[:country],
+    contracts: contract_award_notice[:contract_award_notice_id]
   }
 
-  # If we haven't seen this contractor before
-  if ScraperWiki.select("abn from data where abn='#{contractor[:abn]}'").count == 1
-    contractor[:contracts] = contract_award_notice[:contract_award_notice_id]
-  else
-    contractor[:contracts] = contract_award_notice[:contract_award_notice_id]
+  # If we we've seen this contractor before
+  if ScraperWiki.select("abn from data where abn='#{contractor[:abn]}'").count > 1
     current_contracts = ScraperWiki.select("contract_award_notice_id from data where abn='#{contractor[:abn]}'and contract_award_notice_id!='#{contract_award_notice[:contract_award_notice_id]}'").map{|c| c["contract_award_notice_id"]}
     contractor[:contracts] = contractor[:contracts] + ", " + current_contracts.join(', ')
   end
