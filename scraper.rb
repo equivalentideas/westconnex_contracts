@@ -37,6 +37,10 @@ def parse_contract_listing(page, last_updated)
     if !row.css('> th').empty? && !row.css('> td').empty?
       key = format_key(row.at(:th).text)
 
+      # There keys for contractor address and agency address are dupes,
+      # prepend agency_ second time round
+      key = ("agency_" + key.to_s).to_sym if contract_award_notice.has_key?(key)
+
       if key == :publish_date
         value = format_date(row.at(:td).text)
       elsif key == :contract_duration
