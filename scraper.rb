@@ -1,9 +1,5 @@
 # Scraper to run on morph.io
 
-def row_value(row)
-  row.at(:td).text
-end
-
 # remove whitespace
 def cleanup_string(string)
   string.delete("\r\n\t").gsub(/\s$/, "").gsub(/^\s/, "")
