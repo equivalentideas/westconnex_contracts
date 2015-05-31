@@ -115,24 +115,31 @@ agent = Mechanize.new
 
 domain = "https://tenders.nsw.gov.au"
 
-# param for selecting pages of results in the index
-# each page has 15 rows. Page 1: startRow=0, Page 2: startRow=15 etc.
-start_row = 0
+search_indexes = [
+  "https://tenders.nsw.gov.au/rms/?refine=CN&keyword=WDA&event=public.advancedsearch.keyword&orderBy=Publish+Date+-+Descending",
+  "https://tenders.nsw.gov.au/?refine=CN&keyword=westconnex&orderBy=Publish%20Date%20-%20Descending&event=public%2Eadvancedsearch%2Ekeyword"
+]
 
-while start_row >= 0
-  index = agent.get("https://tenders.nsw.gov.au/?refine=CN&keyword=westconnex&orderBy=Publish%20Date%20-%20Descending&event=public%2Eadvancedsearch%2Ekeyword&startRow=#{start_row}")
-  page_contract_listings = index.at('#main-content').css('h2 + table')[1..-1]
+search_indexes.each do |index_url|
+  # param for selecting pages of results in the index
+  # each page has 15 rows. Page 1: startRow=0, Page 2: startRow=15 etc.
+  start_row = 0
 
-  if !page_contract_listings.empty?
-    page_contract_listings.each do |l|
-      last_updated = DateTime.parse(cleanup_string(l.search(:tr).last.at('.last-updated').children.last.text), '%d-%b-%Y %l:%M%p').strftime('%Y-%m-%d %H:%M')
-      page_link = l.search(:tr).last
-      page = agent.get(domain + l.search(:tr).last.at(:a).attr(:href))
-      parse_contract_listing(page, last_updated)
+  while start_row >= 0
+    index = agent.get(index_url + "&startRow=#{start_row}")
+    page_contract_listings = index.at('#main-content').css('h2 + table')[1..-1]
+
+    if !page_contract_listings.empty?
+      page_contract_listings.each do |l|
+        last_updated = DateTime.parse(cleanup_string(l.search(:tr).last.at('.last-updated').children.last.text), '%d-%b-%Y %l:%M%p').strftime('%Y-%m-%d %H:%M')
+        page_link = l.search(:tr).last
+        page = agent.get(domain + l.search(:tr).last.at(:a).attr(:href))
+        parse_contract_listing(page, last_updated)
+      end
+
+      start_row = start_row + page_contract_listings.count
+    else
+      start_row = -1
     end
-
-    start_row = start_row + page_contract_listings.count
-  else
-    start_row = -1
   end
 end
