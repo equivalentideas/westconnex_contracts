@@ -43,7 +43,7 @@ def parse_contract_listing(page, last_updated)
 
       if key == :publish_date
         value = format_date(row.at(:td).text)
-      elsif key == :contract_duration
+      elsif key == :contract_duration || key == :amended_contract_duration
         contract_duration = cleanup_string(row.at(:td).text).gsub(" to", "").split
         contract_award_notice[:contract_start_date] = format_date(contract_duration[0])
         contract_award_notice[:contract_end_date] = format_date(contract_duration[1])
